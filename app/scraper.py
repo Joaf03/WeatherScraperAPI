@@ -14,7 +14,7 @@ class Day(Enum):
     N = "Norte"
     L = "Leste"
 
-def scraper(url, date):
+def scraper(url, date, city, region):
     # Configurar Chrome em modo headless para Docker
     chrome_options = Options()
     chrome_options.add_argument("--headless")
@@ -32,8 +32,8 @@ def scraper(url, date):
 
         soup = BeautifulSoup(html, 'html.parser')
 
-        weather_data = getWeatherData(soup, date)
-            
+        weather_data = getWeatherData(soup, date, city, region)
+        
         return weather_data
         
     except Exception as e:
@@ -42,11 +42,18 @@ def scraper(url, date):
         driver.quit()
 
 
-def getWeatherData(soup, date):
+def getWeatherData(soup, date, city, region):
     weather_data = {}
 
     dateDiv = soup.find('div', id=date)
     location = soup.find('h2', class_='local-header')
+
+    # Needed because when the region is invalid, IPMA defaults de URL to Lisbon, Lisbon
+    parameterLocation = f"{city}, {region}"
+
+    if (not dateDiv or (location.get_text(strip=True) != parameterLocation)):
+        raise Exception("Parâmetros inválidos: a data deve estar dentro dos próximos 9 dias e a localização tem de ser válida.")
+
     minTemp = dateDiv.find('span', class_='tempMin')
     maxTemp = dateDiv.find('span', class_='tempMax')
     windDir = dateDiv.find('div', class_='windDir')

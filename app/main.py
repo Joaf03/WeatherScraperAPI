@@ -7,4 +7,4 @@ app = FastAPI()
 @app.get("/")
 def root(date: int = Query(..., description="Date"), city: str = Query(..., description="City name"), region: str = Query(..., description="Region name")):
     url = f"https://www.ipma.pt/pt/otempo/prev.localidade.hora/#{city}&{region}"
-    return scraper(url, date)
+    return scraper(url, date, city, region)
