@@ -26,7 +26,8 @@ def scraper(url, date, city, region):
     try:
         driver.get(url)
         
-        time.sleep(2)
+        # Wait for the Javascript to load
+        time.sleep(1)
         
         html = driver.page_source
 
@@ -48,7 +49,7 @@ def getWeatherData(soup, date, city, region):
     dateDiv = soup.find('div', id=date)
     location = soup.find('h2', class_='local-header')
 
-    # Needed because when the region is invalid, IPMA defaults de URL to Lisbon, Lisbon
+    # Needed because when the region is invalid, IPMA defaults the URL to Lisbon, Lisbon
     parameterLocation = f"{city}, {region}"
 
     if (not dateDiv or (location.get_text(strip=True) != parameterLocation)):
